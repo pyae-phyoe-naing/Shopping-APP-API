@@ -24,9 +24,29 @@ const get = async (req, res, next) => {
     }
      responseMsg(res, true, 'Get Permission', permitData);
 }
-
+const patch = async (req, res, next) => {
+    let existPermit = await DB.findById(req.params['id']);
+    if (existPermit) {
+        await DB.findByIdAndUpdate(existPermit._id, req.body);
+        let updatePermit = await DB.findById(existPermit._id);
+     responseMsg(res, true, 'Update Permission',updatePermit);
+    } else {
+        next(new Error('Permission not found with that ID'));
+    }
+}
+const drop = async (req, res, next) => {
+    let existPermit = await DB.findById(req.params['id']);
+    if (existPermit) {
+        await DB.findByIdAndDelete(existPermit._id);
+        responseMsg(res, true, 'Delete Permission', existPermit);
+    } else {
+        next(new Error('Permission not found with that ID'));
+    }
+}
 module.exports = {
     all,
     add,
-    get
+    get,
+    patch,
+    drop
 }
