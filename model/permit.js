@@ -6,5 +6,5 @@ const permitSchema = new Schema({
     created : { type: Date, default: Date.now }
 });
 
-const permit = mongoose.model('pemit',permitSchema);
+const permit = mongoose.model('permit',permitSchema);
 module.exports = permit;

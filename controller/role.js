@@ -1,10 +1,11 @@
 const DB = require('../model/role');
+const permitDB = require('../model/permit');
 const {
     responseMsg
 } = require('../utils/helper');
 
 const all = async (req, res, next) => {
-    let roles = await DB.find().select('-__v');
+    let roles = await DB.find().populate('permits').select('-__v');
     responseMsg(res, true, 'All Roles', roles);
 }
 const add = async (req, res, next) => {
@@ -43,10 +44,34 @@ const drop = async (req, res, next) => {
         next(new Error('Role not found with that ID'));
     }
 }
+const roleAddPermit = async (req, res, next) => {
+    const existPermit = await permitDB.findById(req.body.permitID);
+    const existRole = await DB.findById(req.body.roleID);
+
+    if (existPermit && existRole) {
+        let permitExistInRole = existRole.permits.includes(existPermit._id);
+        if (!permitExistInRole) {
+                    await DB.findByIdAndUpdate(existRole._id, {
+                        $push: {
+                            permits: existPermit._id
+                        }
+                    });
+                    let role = await DB.findById(existRole._id).populate('permits').select('-__v');
+                    responseMsg(res, true, 'Delete Role', role);
+        } else {
+                next(new Error('This permission is already exists.'));
+        }
+
+    } else {
+         next(new Error('Can not add permission.Check RoleID and PermitID'));
+    }
+
+}
 module.exports = {
     all,
     add,
     get,
     patch,
-    drop
+    drop,
+    roleAddPermit
 }

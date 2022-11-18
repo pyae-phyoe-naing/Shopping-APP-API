@@ -10,7 +10,8 @@ const {
 } = require('../utils/validator');
 
 router.get('/', controller.all);
-router.post('/',[ validateBody(RoleSchema.Add) ,controller.add]);
+router.post('/', [validateBody(RoleSchema.Add), controller.add]);
+router.post('/add/permit', [validateBody(RoleSchema.RoleAddPermit), controller.roleAddPermit]);
 
 router.route('/:id')
     .get(validateParam(AllSchema.id, 'id'), controller.get)
