@@ -12,6 +12,7 @@ const {
 router.get('/', controller.all);
 router.post('/', [validateBody(RoleSchema.Add), controller.add]);
 router.post('/add/permit', [validateBody(RoleSchema.RoleAddPermit), controller.roleAddPermit]);
+router.post('/remove/permit', [validateBody(RoleSchema.RoleAddPermit), controller.roleRemovePermit]);
 
 router.route('/:id')
     .get(validateParam(AllSchema.id, 'id'), controller.get)

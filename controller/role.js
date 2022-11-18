@@ -57,7 +57,7 @@ const roleAddPermit = async (req, res, next) => {
                         }
                     });
                     let role = await DB.findById(existRole._id).populate('permits','-__v').select('-__v');
-                    responseMsg(res, true, 'Delete Role', role);
+                    responseMsg(res, true, 'Add Permission in Role', role);
         } else {
                 next(new Error('This permission is already exists.'));
         }
@@ -67,11 +67,35 @@ const roleAddPermit = async (req, res, next) => {
     }
 
 }
+const roleRemovePermit = async (req, res, next) => {
+    const existPermit = await permitDB.findById(req.body.permitID);
+    const existRole = await DB.findById(req.body.roleID);
+
+    if (existPermit && existRole) {
+        let permitExistInRole = existRole.permits.includes(existPermit._id);
+        if (permitExistInRole) {
+            await DB.findByIdAndUpdate(existRole._id, {
+                $pull: {
+                    permits: existPermit._id
+                }
+            });
+            let role = await DB.findById(existRole._id).populate('permits', '-__v').select('-__v');
+            responseMsg(res, true, 'Remove Permission in Role', role);
+        } else {
+            next(new Error('This permission is not exists in role.'));
+        }
+
+    } else {
+        next(new Error('Can not remove permission.Check RoleID and PermitID'));
+    }
+
+}
 module.exports = {
     all,
     add,
     get,
     patch,
     drop,
-    roleAddPermit
+    roleAddPermit,
+    roleRemovePermit
 }
