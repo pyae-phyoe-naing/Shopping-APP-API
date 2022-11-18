@@ -5,7 +5,7 @@ const {
 } = require('../utils/helper');
 
 const all = async (req, res, next) => {
-    let roles = await DB.find().populate('permits').select('-__v');
+    let roles = await DB.find().populate('permits','-__v').select('-__v');
     responseMsg(res, true, 'All Roles', roles);
 }
 const add = async (req, res, next) => {
@@ -56,7 +56,7 @@ const roleAddPermit = async (req, res, next) => {
                             permits: existPermit._id
                         }
                     });
-                    let role = await DB.findById(existRole._id).populate('permits').select('-__v');
+                    let role = await DB.findById(existRole._id).populate('permits','-__v').select('-__v');
                     responseMsg(res, true, 'Delete Role', role);
         } else {
                 next(new Error('This permission is already exists.'));
