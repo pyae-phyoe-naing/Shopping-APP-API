@@ -2,7 +2,7 @@ const DB = require('../model/permit');
 const { responseMsg } = require('../utils/helper');
 
 const all = async (req, res, next) => {
-    let permissions = await DB.find();
+    let permissions = await DB.find().select('-__v');
     responseMsg(res, true, 'All Permissions', permissions);
 }
 
@@ -17,7 +17,7 @@ const add = async (req, res, next) => {
     }
 }
 const get = async (req, res, next) => {
-    let permitData = await DB.findById(req.params.id);
+    let permitData = await DB.findById(req.params.id).select('-__v');
     if (!permitData) {
         next(new Error('Permission not found with that ID'));
         return;
@@ -28,7 +28,7 @@ const patch = async (req, res, next) => {
     let existPermit = await DB.findById(req.params['id']);
     if (existPermit) {
         await DB.findByIdAndUpdate(existPermit._id, req.body);
-        let updatePermit = await DB.findById(existPermit._id);
+        let updatePermit = await DB.findById(existPermit._id).select('-__v');
      responseMsg(res, true, 'Update Permission',updatePermit);
     } else {
         next(new Error('Permission not found with that ID'));

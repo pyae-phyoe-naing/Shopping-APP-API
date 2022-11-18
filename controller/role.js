@@ -4,7 +4,7 @@ const {
 } = require('../utils/helper');
 
 const all = async (req, res, next) => {
-    let roles = await DB.find();
+    let roles = await DB.find().select('-__v');
     responseMsg(res, true, 'All Roles', roles);
 }
 const add = async (req, res, next) => {
@@ -17,7 +17,7 @@ const add = async (req, res, next) => {
     }
 }
 const get = async (req, res, next) => {
-    let roleData = await DB.findById(req.params.id);
+    let roleData = await DB.findById(req.params.id).select('-__v');
     if (!roleData) {
         next(new Error('Role not found with that ID'));
         return;
@@ -28,7 +28,7 @@ const patch = async (req, res, next) => {
     let existRole = await DB.findById(req.params['id']);
     if (existRole) {
         await DB.findByIdAndUpdate(existRole._id, req.body);
-        let updateRole = await DB.findById(existRole._id);
+        let updateRole = await DB.findById(existRole._id).select('-__v');
         responseMsg(res, true, 'Update Role', updateRole);
     } else {
         next(new Error('Role not found with that ID'));
