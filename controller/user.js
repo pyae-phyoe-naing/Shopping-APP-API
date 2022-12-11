@@ -1,7 +1,8 @@
 const DB = require('../model/user');
 const {
     encode,
-    responseMsg
+    responseMsg,
+    comparePass
 } = require('../utils/helper');
 
 const register = async (req, res, next) => {
@@ -24,7 +25,26 @@ const register = async (req, res, next) => {
     responseMsg(res, true, 'Register success', user);
 }
 
+const login = async (req, res, next) => {
+    let existUser = await DB.findOne({
+        phone: req.body.phone
+    }).populate('roles permits','-__v').select('-__v');
+    if (!existUser) {
+        next(new Error('Creditial Error'));
+        return;
+    }
+    // check password
+    let checkPass = comparePass(req.body.password, existUser.password);
+    if (!checkPass) {
+        next(new Error('Creditial Error'));
+        return;
+    }
+    let user = existUser.toObject(); // change mongo object to java script object
+    delete user.password;
+    responseMsg(res, true, 'Login success', user);
+}
 
 module.exports = {
-    register
+    register,
+    login
 }
