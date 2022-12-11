@@ -11,7 +11,13 @@ const migrate = () => {
         console.log(insertUser);
     });
 }
+const backup = async() => {
+    let users = await userDB.find();
+    fs.writeFileSync('./migrations/backups/user.json', JSON.stringify(users));
+    console.log('Success Backup Data');
+}
 
 module.exports = {
-    migrate
+    migrate,
+    backup
 }

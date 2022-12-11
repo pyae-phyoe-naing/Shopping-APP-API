@@ -14,7 +14,8 @@ app.use('/roles', roleRoute);
 
 const migrateData = async () => {
     let migrator = require('./migrations/migrator');
-    migrator.migrate();
+    // await migrator.migrate();
+    await migrator.backup();
 }
 migrateData();
 
@@ -22,5 +23,8 @@ app.listen(process.env.PORT, console.log(`Server is running at port ${process.en
 
 app.use((err, req, res, next) => {
     err.status = err.status || 500;
-    res.status(err.status).json({con:false,msg:err.message})
+    res.status(err.status).json({
+        con: false,
+        msg: err.message
+    })
 })
