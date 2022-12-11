@@ -1,6 +1,7 @@
-
+const bcrypt = require('bcryptjs');
 module.exports = {
-     responseMsg : (res, con, msg, result = []) => {
+    encode: payload => bcrypt.hashSync(payload),
+    responseMsg: (res, con, msg, result = []) => {
         res.status(200).json({
             con,
             msg,

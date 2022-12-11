@@ -12,6 +12,12 @@ const roleRoute = require('./route/role');
 app.use('/permits', permitRoute);
 app.use('/roles', roleRoute);
 
+const migrateData = async () => {
+    let migrator = require('./migrations/migrator');
+    migrator.migrate();
+}
+migrateData();
+
 app.listen(process.env.PORT, console.log(`Server is running at port ${process.env.PORT}`));
 
 app.use((err, req, res, next) => {
