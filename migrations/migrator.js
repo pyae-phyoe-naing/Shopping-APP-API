@@ -25,6 +25,24 @@ const rolePermitMigrate = () => {
         console.log(insertPermit);
     });
 }
+const addAdminRole = async () => {
+    let adminUser = await userDB.findOne({ phone: '09100100100' });
+    let adminRole = await roleDB.findOne({ name: 'Admin' });
+    let existRoleID = adminUser.roles.includes(adminRole._id);
+    if (!existRoleID) {
+            await userDB.findByIdAndUpdate(adminUser._id, {
+                $push: {
+                    roles: adminRole._id
+                }
+            });
+            let admin = await userDB.findById(adminUser._id);
+            console.log(existRoleID);
+    } else {
+        console.log('Role is already exist');
+    }
+
+}
+
 const backup = async() => {
     let users = await userDB.find();
     fs.writeFileSync('./migrations/backups/user.json', JSON.stringify(users));
@@ -34,5 +52,6 @@ const backup = async() => {
 module.exports = {
     migrate,
     rolePermitMigrate,
+    addAdminRole,
     backup
 }

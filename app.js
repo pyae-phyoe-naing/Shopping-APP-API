@@ -18,7 +18,8 @@ const migrateData = async () => {
     let migrator = require('./migrations/migrator');
     // await migrator.migrate();
    // await migrator.backup();
-    await migrator.rolePermitMigrate();
+   // await migrator.rolePermitMigrate();
+    await migrator.addAdminRole();
 }
  migrateData();
 
