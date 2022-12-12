@@ -17,9 +17,10 @@ app.use('/users', userRoute);
 const migrateData = async () => {
     let migrator = require('./migrations/migrator');
     // await migrator.migrate();
-    await migrator.backup();
+   // await migrator.backup();
+    await migrator.rolePermitMigrate();
 }
-// migrateData();
+ migrateData();
 
 app.listen(process.env.PORT, console.log(`Server is running at port ${process.env.PORT}`));
 
