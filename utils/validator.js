@@ -1,3 +1,7 @@
+const {
+    decodeToken
+} = require("./token");
+const Redis = require('../utils/redis');
 
 module.exports = {
     validateBody: (schema) => {
@@ -10,8 +14,8 @@ module.exports = {
             }
         }
     },
-    validateParam: (schema, name)=>{
-        return (req, res, next)=>{
+    validateParam: (schema, name) => {
+        return (req, res, next) => {
             let obj = {};
             obj[`${name}`] = req.params[`${name}`];
             let result = schema.validate(obj);
@@ -20,6 +24,27 @@ module.exports = {
                 return;
             }
             next();
+        }
+    },
+    validateToken: () => {
+        return async (req, res, next) => {
+            if (!req.headers.authorization) {
+                next(new Error('Please First Login'));
+                return;
+            }
+            let token = req.headers.authorization.split(' ')[1];
+            let tokenUser = decodeToken(token);
+            if (!tokenUser) {
+                next(new Error('Tokenization Error'));
+                return;
+            }
+            let user = await Redis.get(tokenUser._id);
+            if (user) {
+                req.user = user;
+                next();
+            } else {
+                next(new Error('Tokenization Error'));
+            }
         }
     }
 }
