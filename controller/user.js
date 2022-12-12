@@ -1,4 +1,5 @@
 const Redis = require('../utils/redis');
+const {makeToken} = require('../utils/token');
 const DB = require('../model/user');
 const {
     encode,
@@ -42,6 +43,7 @@ const login = async (req, res, next) => {
     }
     let user = existUser.toObject(); // change mongo object to java script object
     delete user.password;
+    user.token = makeToken(user);
     Redis.set(user._id, user);
     responseMsg(res, true, 'Login success', user);
 }
