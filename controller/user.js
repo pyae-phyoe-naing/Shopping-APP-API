@@ -1,3 +1,4 @@
+const Redis = require('../utils/redis');
 const DB = require('../model/user');
 const {
     encode,
@@ -41,6 +42,7 @@ const login = async (req, res, next) => {
     }
     let user = existUser.toObject(); // change mongo object to java script object
     delete user.password;
+    Redis.set(user._id, user);
     responseMsg(res, true, 'Login success', user);
 }
 
