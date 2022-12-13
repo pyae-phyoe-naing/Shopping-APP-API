@@ -33,18 +33,23 @@ module.exports = {
                 return;
             }
             let token = req.headers.authorization.split(' ')[1];
-            let tokenUser = decodeToken(token);
-            if (!tokenUser) {
+            try {
+                let tokenUser = decodeToken(token);
+                if (!tokenUser) {
+                    next(new Error('Tokenization Error'));
+                    return;
+                }
+                let user = await Redis.get(tokenUser._id);
+                if (user) {
+                    req.user = user;
+                    next();
+                } else {
+                    next(new Error('Tokenization Error'));
+                }
+            } catch (error) {
                 next(new Error('Tokenization Error'));
-                return;
             }
-            let user = await Redis.get(tokenUser._id);
-            if (user) {
-                req.user = user;
-                next();
-            } else {
-                next(new Error('Tokenization Error'));
-            }
+            
         }
     },
     validateRole: (role) => {
@@ -55,6 +60,20 @@ module.exports = {
                 return;
             }
             next();
+        }
+    },
+    hasAnyRole: (roles) => {
+        return async (req, res, next) => {
+            let bol = false;
+            for (let i = 0; i < roles.length; i++) {
+                let hasRole = req.user.roles.find((ro) => ro.name === roles[i]);
+                if (hasRole) {
+                    bol = true;
+                    break;
+                }
+            }
+            if (bol) next();
+            else next(new Error('You need at least one Role!'));
         }
     }
 }

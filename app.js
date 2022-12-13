@@ -9,9 +9,10 @@ app.use(express.json());
 const permitRoute = require('./route/permit');
 const roleRoute = require('./route/role');
 const userRoute = require('./route/user');
+const { validateToken, hasAnyRole } = require('./utils/validator');
 
 app.use('/permits', permitRoute);
-app.use('/roles', roleRoute);
+app.use('/roles', [validateToken(), hasAnyRole(['Admin', 'Manager', 'Supervisor']), roleRoute]);
 app.use('/users', userRoute);
 
 const migrateData = async () => {
