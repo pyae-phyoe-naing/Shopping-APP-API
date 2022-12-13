@@ -46,5 +46,15 @@ module.exports = {
                 next(new Error('Tokenization Error'));
             }
         }
+    },
+    validateRole: (role) => {
+        return async (req, res, next) => {
+            let isRole = req.user.roles.find((ro) => ro.name == role);
+            if (!isRole) {
+                next(new Error('No Permission!'));
+                return;
+            }
+            next();
+        }
     }
 }

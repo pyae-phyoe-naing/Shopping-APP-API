@@ -21,7 +21,7 @@ const migrateData = async () => {
    // await migrator.rolePermitMigrate();
     await migrator.addAdminRole();
 }
- migrateData();
+ // migrateData();
 
 app.listen(process.env.PORT, console.log(`Server is running at port ${process.env.PORT}`));
 

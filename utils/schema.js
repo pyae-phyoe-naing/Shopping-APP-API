@@ -25,7 +25,11 @@ module.exports = {
         login: Joi.object({
             phone: Joi.string().required().min(7).max(11),
             password: Joi.string().min(8).required()
-        })
+        }),
+          UserAddRole: Joi.object({
+              roleId: Joi.string().required().regex(/^[0-9a-fA-F]{24}$/),
+              userId: Joi.string().required().regex(/^[0-9a-fA-F]{24}$/)
+          })
     },
     AllSchema: {
         id: Joi.object({

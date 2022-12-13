@@ -1,6 +1,7 @@
 const Redis = require('../utils/redis');
 const {makeToken} = require('../utils/token');
 const DB = require('../model/user');
+const roleDB = require('../model/role');
 const {
     encode,
     responseMsg,
@@ -47,8 +48,30 @@ const login = async (req, res, next) => {
     Redis.set(user._id, user);
     responseMsg(res, true, 'Login success', user);
 }
+const addRole = async (req,res,next) => {
 
+    let checkUser = await DB.findById(req.body.userId);
+    if (!checkUser) {
+        next(new Error('User not found.'));
+        return;
+    }
+    let checkRole = await roleDB.findById(req.body.roleId);
+    if (!checkRole) {
+         next(new Error('Role not found.'));
+         return;
+    }
+    // Check Role exist in User
+    if (checkUser.roles.includes(checkRole._id)) {
+        next(new Error('Role is already exist!'));
+        return;
+    }
+    // Add Role in User
+    await DB.findByIdAndUpdate(checkUser._id, { $push: { roles: checkRole._id } });
+    let result = await DB.findById(checkUser._id).populate('roles permits','-__v -created').select('-__v -password');
+    responseMsg(res, true, 'Role add success', result);
+}
 module.exports = {
     register,
-    login
+    login,
+    addRole
 }
