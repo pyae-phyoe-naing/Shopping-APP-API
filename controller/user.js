@@ -2,6 +2,7 @@ const Redis = require('../utils/redis');
 const {makeToken} = require('../utils/token');
 const DB = require('../model/user');
 const roleDB = require('../model/role');
+const permitDB = require('../model/permit');
 const {
     encode,
     responseMsg,
@@ -70,6 +71,7 @@ const addRole = async (req,res,next) => {
     let result = await DB.findById(checkUser._id).populate('roles permits','-__v -created').select('-__v -password');
     responseMsg(res, true, 'Role add success', result);
 }
+
 const removeRole = async (req, res, next) => {
 
     let checkUser = await DB.findById(req.body.userId);
@@ -96,9 +98,66 @@ const removeRole = async (req, res, next) => {
     let result = await DB.findById(checkUser._id).populate('roles permits', '-__v -created').select('-__v -password');
     responseMsg(res, true, 'Role remove success', result);
 }
+
+
+const addPermit = async (req, res, next) => {
+
+    let checkUser = await DB.findById(req.body.userId);
+    if (!checkUser) {
+        next(new Error('User not found.'));
+        return;
+    }
+    let checkPermit = await permitDB.findById(req.body.permitId);
+    if (!checkPermit) {
+        next(new Error('Permission not found.'));
+        return;
+    }
+    // Check Permit exist in User
+    if (checkUser.permits.includes(checkPermit._id)) {
+        next(new Error('Permission is already exist!'));
+        return;
+    }
+    // Add Permit in User
+    await DB.findByIdAndUpdate(checkUser._id, {
+        $push: {
+            permits: checkPermit._id
+        }
+    });
+    let result = await DB.findById(checkUser._id).populate('roles permits', '-__v -created').select('-__v -password');
+    responseMsg(res, true, 'Permission add success', result);
+}
+const removePermit = async (req, res, next) => {
+
+    let checkUser = await DB.findById(req.body.userId);
+    if (!checkUser) {
+        next(new Error('User not found.'));
+        return;
+    }
+    let checkPermit = await permitDB.findById(req.body.permitId);
+    if (!checkPermit) {
+        next(new Error('Permit not found.'));
+        return;
+    }
+    // Check Permit exist in User
+    if (!checkUser.permits.includes(checkPermit._id)) {
+        next(new Error('Permit is already remove!'));
+        return;
+    }
+    // Remove Permit in User
+    await DB.findByIdAndUpdate(checkUser._id, {
+        $pull: {
+            permits: checkPermit._id
+        }
+    });
+    let result = await DB.findById(checkUser._id).populate('roles permits', '-__v -created').select('-__v -password');
+    responseMsg(res, true, 'Permit remove success', result);
+}
+
 module.exports = {
     register,
     login,
     addRole,
-    removeRole
+    removeRole,
+    addPermit,
+    removePermit
 }
