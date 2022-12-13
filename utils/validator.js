@@ -75,5 +75,19 @@ module.exports = {
             if (bol) next();
             else next(new Error('You need at least one Role!'));
         }
-    }
+    },
+     hasAnyPermit: (permits) => {
+         return async (req, res, next) => {
+             let bol = false;
+             for (let i = 0; i < permits.length; i++) {
+                 let hasPermit = req.user.permits.find((ro) => ro.name === permits[i]);
+                 if (hasPermit) {
+                     bol = true;
+                     break;
+                 }
+             }
+             if (bol) next();
+             else next(new Error('You need at least one Permission!'));
+         }
+     }
 }
