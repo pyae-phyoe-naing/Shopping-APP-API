@@ -37,7 +37,34 @@ const add = async (req, res, next) => {
     })
     responseMsg(res, true, 'Sub Category create successfully', subcat);
 }
+const get = async (req, res, next) => {
+    let dbSubCat = await DB.findById(req.params.id).select('-__v');
+    if (!dbSubCat) {
+        next(new Error('Sub Category not found with that ID'));
+        return;
+    }
+    responseMsg(res, true, 'Get Sub Category', dbSubCat);
+}
+const drop = async (req, res, next) => {
+    let dbSubCat = await DB.findById(req.params.id).select('-__v');
+    if (!dbSubCat) {
+        next(new Error('Sub Category not found with that ID'));
+        return;
+    }
+    // remove subcat ID from parent category
+    await categoryDB.findByIdAndUpdate(dbSubCat.catId, {
+        $pull: {
+            subcats: dbSubCat._id
+        }
+    });
+    // delet sub category
+    deleteFile(dbSubCat.image);
+    await DB.findByIdAndDelete(dbSubCat._id);
+    responseMsg(res, true, 'Delete Sub Category');
+}
 module.exports = {
     all,
-    add
+    add,
+    get,
+    drop
 }
