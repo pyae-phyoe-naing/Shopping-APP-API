@@ -19,8 +19,16 @@ const add = async (req, res, next) => {
     let cat = await new DB(req.body).save();
     responseMsg(res, true, 'Category create successfully',cat);
 }
-
+const get = async (req, res, next) => {
+    let dbCat = await DB.findById(req.params.id).select('-__v');
+      if (!dbCat) {
+          next(new Error('Category not found with that ID'));
+          return;
+      }
+      responseMsg(res, true, 'Get Category', dbCat);
+}
 module.exports = {
     all,
-    add
+    add,
+    get
 }
