@@ -1,10 +1,14 @@
 require('dotenv').config();
+const path = require('path');
 const express = require('express'),
     app = express(),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    fileUpload = require('express-fileupload');
 mongoose.connect(`mongodb://localhost:27017/${process.env.DB_NAME}`);
 
 app.use(express.json());
+app.use(fileUpload());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const permitRoute = require('./route/permit');
 const roleRoute = require('./route/role');
