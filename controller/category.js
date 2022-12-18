@@ -27,8 +27,20 @@ const get = async (req, res, next) => {
       }
       responseMsg(res, true, 'Get Category', dbCat);
 }
+const drop = async (req, res, next) => {
+    let dbCat = await DB.findById(req.params.id).select('-__v');
+    if (!dbCat) {
+        next(new Error('Category not found with that ID'));
+        return;
+    }
+    // delet category
+    deleteFile(dbCat.image);
+    await DB.findByIdAndDelete(dbCat._id);
+    responseMsg(res, true, 'Delete Category');
+}
 module.exports = {
     all,
     add,
-    get
+    get,
+    drop
 }
