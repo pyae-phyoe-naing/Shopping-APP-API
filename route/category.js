@@ -10,6 +10,7 @@ const {
     saveFile
 } = require('../utils/gallergy');
 
-router.post('/', [validateToken(),hasAnyRole(['Admin','Manager']),validateBody(CatSchema), saveFile, controller.add]);
+router.get('/', [controller.all]);
+router.post('/', [validateToken(), hasAnyRole(['Admin', 'Manager']), validateBody(CatSchema), saveFile, controller.add]);
 
 module.exports = router;
