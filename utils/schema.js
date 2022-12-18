@@ -36,7 +36,11 @@ module.exports = {
         })
     },
     CatSchema: Joi.object({
-        name : Joi.string().required()
+        name: Joi.string().required()
+    }),
+    SubCatSchema: Joi.object({
+        name: Joi.string().required(),
+        catId: Joi.string().required().regex(/^[0-9a-fA-F]{24}$/)
     }),
     AllSchema: {
         id: Joi.object({

@@ -14,12 +14,15 @@ const permitRoute = require('./route/permit');
 const roleRoute = require('./route/role');
 const userRoute = require('./route/user');
 const catRoute = require('./route/category');
+const subcatRoute = require('./route/subcat');
+
 const { validateToken, hasAnyRole, hasAnyPermit } = require('./utils/validator');
 
 app.use('/permits', [validateToken(), hasAnyPermit(['create_category', 'edit_category']), permitRoute]);
 app.use('/roles', [validateToken(), hasAnyRole(['Admin', 'Manager', 'Supervisor']), roleRoute]);
 app.use('/users', userRoute);
 app.use('/categories', catRoute);
+app.use('/subcats', subcatRoute);
 
 const migrateData = async () => {
     let migrator = require('./migrations/migrator');
