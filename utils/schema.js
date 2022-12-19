@@ -46,6 +46,12 @@ module.exports = {
         name: Joi.string().required(),
         subcatId: Joi.string().required().regex(/^[0-9a-fA-F]{24}$/)
     }),
+    DeliverySchema: Joi.object({
+        name: Joi.string().required(),
+        price: Joi.number().required(),
+        duration: Joi.string().required(),
+        remark: Joi.optional()
+    }),
     AllSchema: {
         id: Joi.object({
             id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)

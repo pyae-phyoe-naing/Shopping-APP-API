@@ -17,6 +17,7 @@ const catRoute = require('./route/category');
 const subcatRoute = require('./route/subcat');
 const childcatRoute = require('./route/childcat');
 const tagRoute = require('./route/tag');
+const deliveryRoute = require('./route/delivery');
 
 const { validateToken, hasAnyRole, hasAnyPermit } = require('./utils/validator');
 
@@ -27,6 +28,7 @@ app.use('/categories', catRoute);
 app.use('/subcats', subcatRoute);
 app.use('/childcats', childcatRoute);
 app.use('/tags', tagRoute);
+app.use('/delivery', deliveryRoute);
 
 const migrateData = async () => {
     let migrator = require('./migrations/migrator');
