@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Pyae Phyoe Naing",
+        "email": "pyaephyoe@gmail.com",
+        "phone": "09100100100",
+        "password":"123123123"
+    },
+     {
+         "name": "Manager",
+         "email": "manager@gmail.com",
+         "phone": "09200200200",
+         "password": "123123123"
+     }
+]
