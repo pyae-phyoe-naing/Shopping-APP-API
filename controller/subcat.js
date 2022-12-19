@@ -62,9 +62,50 @@ const drop = async (req, res, next) => {
     await DB.findByIdAndDelete(dbSubCat._id);
     responseMsg(res, true, 'Delete Sub Category');
 }
+const patch = async (req, res, next) => {
+    // check ID subcat exist or in DB
+    let dbEsixtSubCat = await DB.findById(req.params.id);
+    if (!dbEsixtSubCat) {
+        if (req.body.image) {
+            deleteFile(req.body.image);
+        }
+        next(new Error('Sub Category not found with that ID!'));
+        return;
+    }
+    // Check SubCat Name in already exist in DB without expert ID
+    let subcats = await DB.find();
+    let checkNameExist = subcats.find((subcat) => subcat._id != req.params.id && req.body.name === subcat.name);
+    if (checkNameExist) {
+        if (req.body.image) {
+            deleteFile(req.body.image);
+        }
+        next(new Error('Sub Category name is already in use'));
+        return;
+    }
+    // Check category exist 
+    let dbCategory = await categoryDB.findById(req.body.catId);
+    if (!dbCategory) {
+        if (req.body.image) {
+         deleteFile(req.body.image);
+        }
+        next(new Error('Category not found with That ID'));
+        return;
+    }
+    // Update Sub Cat
+    if (req.body.image) {
+        deleteFile(dbEsixtSubCat.image);
+    }
+    await DB.findByIdAndUpdate(dbEsixtSubCat._id, req.body);
+    let updateSubCat = await DB.findById(dbEsixtSubCat._id);
+    // Update parent category in subcat ID
+    await categoryDB.findByIdAndUpdate(dbEsixtSubCat.catId,{$pull:{subcats:dbEsixtSubCat._id}});
+    await categoryDB.findByIdAndUpdate(updateSubCat.catId, {$push:{subcats: updateSubCat._id}})
+    responseMsg(res, true, 'Sub Category update successfully', updateSubCat);
+}
 module.exports = {
     all,
     add,
     get,
-    drop
+    drop,
+    patch
 }

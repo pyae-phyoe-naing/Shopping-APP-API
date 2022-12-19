@@ -1,7 +1,8 @@
 const router = require('express').Router();
 const controller = require('../controller/subcat');
 const {
-    saveFile
+    saveFile,
+    updateFile
 } = require('../utils/gallergy');
 const {
     SubCatSchema,
@@ -19,6 +20,7 @@ router.post('/', [validateToken(), hasAnyRole(['Admin', 'Manager']), validateBod
 
 router.route('/:id')
     .get([validateParam(AllSchema.id,'id'),controller.get])
-    .delete([validateToken(), hasAnyRole(['Admin', 'Manager']), validateParam(AllSchema.id, 'id'), controller.drop]);
+    .delete([validateToken(), hasAnyRole(['Admin', 'Manager']), validateParam(AllSchema.id, 'id'), controller.drop])
+    .patch([validateToken(), hasAnyRole(['Admin', 'Manager']), validateParam(AllSchema.id, 'id'), validateBody(SubCatSchema), updateFile, controller.patch]);
 
 module.exports = router;
