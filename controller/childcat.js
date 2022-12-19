@@ -78,9 +78,65 @@ const drop = async (req, res, next) => {
     }
 
 }
+const patch = async (req, res, next) => {
+    // check ID childcat exist or in DB
+    let dbEsixtChildCat = await DB.findById(req.params.id);
+    if (!dbEsixtChildCat) {
+        if (req.body.image) {
+            deleteFile(req.body.image);
+        }
+        next(new Error('Child Category not found with that ID!'));
+        return;
+    }
+
+    // Check ChildCat Name in already exist in DB without expert ID
+    let childcats = await DB.find();
+    let checkNameExist = childcats.find((subcat) => subcat._id.toString() !== req.params.id && req.body.name.split(' ').join('').toLowerCase() === subcat.name.split(' ').join('').toLowerCase());
+    if (checkNameExist) {
+        if (req.body.image) {
+            deleteFile(req.body.image);
+        }
+        next(new Error('Child Category name is already in use'));
+        return;
+    }
+
+    // Check sub category exist 
+    let dbSubCat = await subcatDB.findById(req.body.subcatId);
+    if (!dbSubCat) {
+        if (req.body.image) {
+            deleteFile(req.body.image);
+        }
+        next(new Error('Sub Category not found with That ID'));
+        return;
+    }
+    // Update Child Cat
+    try {
+        if (req.body.image) {
+            deleteFile(dbEsixtChildCat.image);
+        }
+        await DB.findByIdAndUpdate(dbEsixtChildCat._id, req.body);
+        let updateChildCat = await DB.findById(dbEsixtChildCat._id);
+        // Update parent subcat 
+        await subcatDB.findByIdAndUpdate(dbEsixtChildCat.subcatId, {
+            $pull: {
+                childcats: dbEsixtChildCat._id
+            }
+        });
+        await subcatDB.findByIdAndUpdate(updateChildCat.subcatId, {
+            $push: {
+                childcats: updateChildCat._id
+            }
+        })
+        responseMsg(res, true, 'Child Category update successfully', updateChildCat);
+    } catch (e) {
+        next(new Error('Something wrong'));
+    }
+
+}
 module.exports = {
     all,
     add,
     get,
-    drop
+    drop,
+    patch
 }
