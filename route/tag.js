@@ -3,16 +3,22 @@ const controller = require('../controller/tag');
 const {
     validateToken,
     hasAnyRole,
-    validateBody
+    validateBody,
+    validateParam
 } = require('../utils/validator');
 const {
-    CatSchema
+    CatSchema,
+    AllSchema
 } = require('../utils/schema');
 const {
     saveFile
 } = require('../utils/gallergy');
 
 router.get('/', controller.all);
-router.post('/', [validateToken(),hasAnyRole(['Admin','Manager']),validateBody(CatSchema),saveFile,controller.add]);
+router.post('/', [validateToken(), hasAnyRole(['Admin', 'Manager']), validateBody(CatSchema), saveFile, controller.add]);
+
+router.route('/:id')
+    .get([validateParam(AllSchema.id, 'id'), controller.get])
+    .delete([validateToken(), hasAnyRole(['Admin', 'Manager']), validateParam(AllSchema.id, 'id'), controller.drop]);
 
 module.exports = router;
