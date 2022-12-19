@@ -17,6 +17,7 @@ router.get('/', controller.all);
 router.post('/', [validateToken(), hasAnyRole(['Admin', 'Manager']), validateBody(ChildCatSchema), saveFile, controller.add]);
 
 router.route('/:id')
-    .get([validateParam(AllSchema.id,'id'),controller.get]);
+    .get([validateParam(AllSchema.id, 'id'), controller.get])
+    .delete([validateToken(),hasAnyRole(['Admin','Manager']),validateParam(AllSchema.id,'id'),controller.drop]);
 
 module.exports = router;
