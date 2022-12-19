@@ -7,7 +7,15 @@ const {
 
 
 const all = async (req, res) => {
-    let childcats = await DB.find().populate('subcatId', '-__v -created').select('-__v');
+    let childcats = await DB.find().populate({
+        path: 'subcatId',
+        select: '-__v',
+        populate: {
+            path: 'childcats',
+            model: 'childcat',
+            select:'-__v'
+        }
+    }).select('-__v');
     responseMsg(res, true, 'All ChildCat', childcats);
 }
 
@@ -38,8 +46,16 @@ const add = async (req, res, next) => {
      })
     responseMsg(res, true, 'Add childcat success',childcat);
 }
-
+const get = async (req, res, next) => {
+    let dbChildCat = await DB.findById(req.params.id).populate('subcatId','-__v -created').select('-__v');;
+    if (!dbChildCat) {
+        next(new Error('Child Category not found with that ID'));
+        return;
+    }
+    responseMsg(res, true, 'Get Child Category', dbChildCat);
+}
 module.exports = {
     all,
-    add
+    add,
+    get
 }

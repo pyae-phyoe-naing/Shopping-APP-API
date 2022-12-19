@@ -8,7 +8,7 @@ const {
 } = require('../utils/gallergy');
 
 const all = async (req, res) => {
-    let subcats = await DB.find();
+    let subcats = await DB.find().populate('childcats','-__v').select('-__v');
     responseMsg(res, true, 'All Sub Categories', subcats);
 }
 const add = async (req, res, next) => {
