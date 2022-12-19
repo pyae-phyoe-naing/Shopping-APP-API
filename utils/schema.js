@@ -42,6 +42,10 @@ module.exports = {
         name: Joi.string().required(),
         catId: Joi.string().required().regex(/^[0-9a-fA-F]{24}$/)
     }),
+    ChildCatSchema: Joi.object({
+        name: Joi.string().required(),
+        subcatId: Joi.string().required().regex(/^[0-9a-fA-F]{24}$/)
+    }),
     AllSchema: {
         id: Joi.object({
             id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
