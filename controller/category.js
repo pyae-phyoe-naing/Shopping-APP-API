@@ -7,7 +7,15 @@ const {
 } = require('../utils/helper');
 
 const all = async (req, res, next) => {
-    let cats = await DB.find().populate('subcats', '-__v -created');
+    let cats = await DB.find().populate({
+        path: 'subcats',
+        select : '-__v',
+        populate: {
+            path: 'childcats',
+            model: 'childcat',
+            select:'-__v'
+        }
+    }).select('-__v');
     responseMsg(res, true, 'All Categories', cats);
 }
 
