@@ -15,6 +15,7 @@ const roleRoute = require('./route/role');
 const userRoute = require('./route/user');
 const catRoute = require('./route/category');
 const subcatRoute = require('./route/subcat');
+const childcatRoute = require('./route/childcat');
 
 const { validateToken, hasAnyRole, hasAnyPermit } = require('./utils/validator');
 
@@ -23,6 +24,7 @@ app.use('/roles', [validateToken(), hasAnyRole(['Admin', 'Manager', 'Supervisor'
 app.use('/users', userRoute);
 app.use('/categories', catRoute);
 app.use('/subcats', subcatRoute);
+app.use('/childcats', childcatRoute);
 
 const migrateData = async () => {
     let migrator = require('./migrations/migrator');
