@@ -7,7 +7,7 @@ const {
 } = require('../utils/helper');
 
 const all = async (req, res, next) => {
-    let cats = await DB.find().populate('subcats','-__v -created');
+    let cats = await DB.find().populate('subcats', '-__v -created');
     responseMsg(res, true, 'All Categories', cats);
 }
 
@@ -43,9 +43,25 @@ const drop = async (req, res, next) => {
     responseMsg(res, true, 'Delete Category');
 }
 const patch = async (req, res, next) => {
+    // Check Exist Category in DB
     let dbCat = await DB.findById(req.params.id).select('-__v');
     if (!dbCat) {
+        if (req.body.image) {
+            deleteFile(req.body.image);
+        }
         next(new Error('Category not found with that ID'));
+        return;
+    }
+    // Check Category name unique with expert ID
+    let cats = await DB.find();
+    let checkExistName = cats.find((cat) => cat._id.toString() !== dbCat._id.toString() && cat.name === req.body.name);
+    // console.log(typeof (dbCat._id)); // object
+    // console.log(typeof (req.params.id)); // string
+    if (checkExistName) {
+        if (req.body.image) {
+            deleteFile(req.body.image);
+        }
+        next(new Error('Category name is already in use!'));
         return;
     }
     // check has image
@@ -56,7 +72,7 @@ const patch = async (req, res, next) => {
     await DB.findByIdAndUpdate(dbCat._id, req.body);
     let update = await DB.findById(dbCat._id);
     // console.log(req);
-    responseMsg(res, true, 'Update Category',update);
+    responseMsg(res, true, 'Update Category', update);
 }
 module.exports = {
     all,
