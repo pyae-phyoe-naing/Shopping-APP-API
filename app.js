@@ -19,8 +19,13 @@ const childcatRoute = require('./route/childcat');
 const tagRoute = require('./route/tag');
 const deliveryRoute = require('./route/delivery');
 const warrantyRoute = require('./route/warranty');
+const productRoute = require('./route/product');
 
-const { validateToken, hasAnyRole, hasAnyPermit } = require('./utils/validator');
+const {
+    validateToken,
+    hasAnyRole,
+    hasAnyPermit
+} = require('./utils/validator');
 
 app.use('/permits', [validateToken(), hasAnyPermit(['create_category', 'edit_category']), permitRoute]);
 app.use('/roles', [validateToken(), hasAnyRole(['Admin', 'Manager', 'Supervisor']), roleRoute]);
@@ -31,15 +36,16 @@ app.use('/childcats', childcatRoute);
 app.use('/tags', tagRoute);
 app.use('/delivery', deliveryRoute);
 app.use('/warranty', warrantyRoute);
+app.use('/products', productRoute);
 
 const migrateData = async () => {
     let migrator = require('./migrations/migrator');
     // await migrator.migrate();
-   // await migrator.backup();
-   // await migrator.rolePermitMigrate();
+    // await migrator.backup();
+    // await migrator.rolePermitMigrate();
     await migrator.addAdminRole();
 }
- // migrateData();
+// migrateData();
 
 app.listen(process.env.PORT, console.log(`Server is running at port ${process.env.PORT}`));
 

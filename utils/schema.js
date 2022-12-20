@@ -56,9 +56,31 @@ module.exports = {
         name: Joi.string().required(),
         remark: Joi.optional()
     }),
+    ProductSchema: Joi.object({
+        name: Joi.string().required(),
+        price: Joi.number().required(),
+        brand: Joi.string().required(),
+        cat: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+        subcat: Joi.string().regex(/^[0-9a-fA-F]{24}$/).optional(),
+        childcat: Joi.string().regex(/^[0-9a-fA-F]{24}$/).optional(),
+        tag: Joi.string().regex(/^[0-9a-fA-F]{24}$/).optional(),
+        discount: Joi.number().optional(),
+        features: Joi.string().required(),
+        description: Joi.string().required(),
+        detail: Joi.string().required(),
+        status: Joi.boolean().optional(),
+        delivery: Joi.string().required(),
+        warranty: Joi.string().required(),
+        colors: Joi.string().required(),
+        size: Joi.string().required(),
+        rating: Joi.string().optional()
+    }),
     AllSchema: {
         id: Joi.object({
             id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
+        }),
+        page: Joi.object({
+            page:Joi.number().optional()
         })
     }
 }
