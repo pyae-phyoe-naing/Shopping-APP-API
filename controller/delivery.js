@@ -27,7 +27,7 @@ const get = async (req, res, next) => {
         next(new Error('Delivery not found with that ID'));
         return;
     }
-    responseMsg(res, true, 'Get tag', dbDelivery);
+    responseMsg(res, true, 'Get Delivery', dbDelivery);
 }
 const drop = async (req, res, next) => {
     let dbDelivery = await DB.findById(req.params.id);
@@ -60,6 +60,9 @@ const patch = async (req, res, next) => {
     }
     // Update Delivery
     try {
+        if (req.body.remark) {
+            req.body.remark = req.body.remark.split(',');
+        }
         await DB.findByIdAndUpdate(dbDelivery._id, req.body);
         let updateDelivery = await DB.findById(dbDelivery._id);
         responseMsg(res, true, 'Delivery update successfully', updateDelivery);
