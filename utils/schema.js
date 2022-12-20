@@ -80,7 +80,10 @@ module.exports = {
             id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
         }),
         page: Joi.object({
-            page:Joi.number().optional()
+            page: Joi.number().optional()
+        }),
+        type: Joi.object({
+            type: Joi.string().regex(/^[a-z]+$/).required()
         })
     }
 }

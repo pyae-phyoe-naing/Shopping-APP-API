@@ -124,10 +124,40 @@ const patch = async (req, res, next) => {
 
 }
 
+// Get Product By Category
+
+const filteByType = async (req, res) => {
+    let page = !req.params.page || req.params.page == 0 ? 1 : Number(req.params.page);
+    const limit = Number(process.env.PAGE_LIMIT);
+    const start = page == 1 ? 0 : page - 1;
+    const skipCount = limit * start;
+
+    let filterType = 'cat';
+    let type = req.params.type;
+
+    switch (type) {
+        case 'cat':
+            filterType = 'cat';
+            break;
+        case 'tag':
+            filterType = 'tag';
+            break;
+        default:
+            filteByType = 'cat';
+            break;
+    }
+
+    let filterObj = {};
+    filterObj[`${filterType}`] = req.params.id
+    let products = await DB.find(filterObj).skip(skipCount).limit(limit).select('-__v');
+    responseMsg(res, true, 'Get Products', products);
+}
+
 module.exports = {
     paginate,
     add,
     get,
     drop,
-    patch
+    patch,
+    filteByType
 }
