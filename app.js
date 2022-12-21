@@ -20,6 +20,7 @@ const tagRoute = require('./route/tag');
 const deliveryRoute = require('./route/delivery');
 const warrantyRoute = require('./route/warranty');
 const productRoute = require('./route/product');
+const orderRoute = require('./route/order');
 
 const {
     validateToken,
@@ -37,6 +38,7 @@ app.use('/tags', tagRoute);
 app.use('/delivery', deliveryRoute);
 app.use('/warranty', warrantyRoute);
 app.use('/products', productRoute);
+app.use('/orders', orderRoute);
 
 const migrateData = async () => {
     let migrator = require('./migrations/migrator');

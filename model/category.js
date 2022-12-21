@@ -1,6 +1,3 @@
-const {
-    string
-} = require('joi');
 const mongoose = require('mongoose');
 const {
     Schema
