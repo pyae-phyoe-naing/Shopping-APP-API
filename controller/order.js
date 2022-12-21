@@ -62,20 +62,40 @@ const getAllOrders = async (req, res, next) => {
 }
 const getMyOrders = async (req, res, next) => {
     let user = req.user;
-    let orders = await DB.find({ user: user._id }).populate({
+    let orders = await DB.find({
+        user: user._id
+    }).populate({
         path: 'user',
-        select:['name','phone']
+        select: ['name', 'phone']
     }).populate({
         path: 'items',
-            populate: {
-                path: 'productId',
-                model:'product'
+        populate: {
+            path: 'productId',
+            model: 'product'
         }
     });
     responseMsg(res, true, 'Get My Orders', orders);
 }
+const deleteOrder = async (req, res, next) => {
+    let existDB = await DB.findById(req.params.id);
+    if (!existDB) {
+        next(new Error('Order not found with that ID'));
+        return;
+    }
+    try {
+        // Delete OrderItems
+        existDB.items.map(async (item) => await orderItemDB.findByIdAndDelete(item._id));
+        // Delete Order
+        await DB.findByIdAndDelete(existDB._id);
+        responseMsg(res, true, 'Delete Order');
+    } catch (e) {
+        next(new Error('Error =>' + e));
+    }
+
+}
 module.exports = {
     add,
     getAllOrders,
-    getMyOrders
+    getMyOrders,
+    deleteOrder
 }
