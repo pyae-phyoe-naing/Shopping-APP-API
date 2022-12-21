@@ -3,7 +3,11 @@ const path = require('path');
 const express = require('express'),
     app = express(),
     mongoose = require('mongoose'),
-    fileUpload = require('express-fileupload');
+    fileUpload = require('express-fileupload'),
+    server = require('http').createServer(app),
+    io = require('socket.io')(server);
+
+
 mongoose.connect(`mongodb://localhost:27017/${process.env.DB_NAME}`);
 
 app.use(express.json());
@@ -40,6 +44,13 @@ app.use('/warranty', warrantyRoute);
 app.use('/products', productRoute);
 app.use('/orders', orderRoute);
 
+io.on('connection', socket => {
+    socket.on('test', data => {
+        console.log(data);
+        socket.emit("success", { name: 'Admin', message: 'Welcome' });
+    })
+});
+
 const migrateData = async () => {
     let migrator = require('./migrations/migrator');
     // await migrator.migrate();
@@ -49,7 +60,7 @@ const migrateData = async () => {
 }
 // migrateData();
 
-app.listen(process.env.PORT, console.log(`Server is running at port ${process.env.PORT}`));
+server.listen(process.env.PORT, console.log(`Server is running at port ${process.env.PORT}`));
 
 app.use((err, req, res, next) => {
     err.status = err.status || 500;
