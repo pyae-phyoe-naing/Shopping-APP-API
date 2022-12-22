@@ -44,12 +44,44 @@ app.use('/warranty', warrantyRoute);
 app.use('/products', productRoute);
 app.use('/orders', orderRoute);
 
-io.on('connection', socket => {
-    socket.on('test', data => {
-        console.log(data);
-        socket.emit("success", { name: 'Admin', message: 'Welcome' });
-    })
+const {
+    decodeToken
+} = require('./utils/token');
+const Redis = require('./utils/redis');
+
+
+io.of('/chat').use(async (socket, next) => {
+    let token = socket.handshake.query.token;
+    // Check Login or not
+    if (!token) {
+        next(new Error('Please first login!'));
+        return;
+    }
+    // Decode User
+    let decode = decodeToken(token);
+    if (!decode) {
+        next(new Error('Tokenization Error!'));
+        return;
+    }
+    // Check Login User or not
+    let user = await Redis.get(decode._id);
+    if (!user) {
+        next(new Error('Not Login User!'));
+        return;
+    }
+    // Go Next Step
+    socket.userData = user;
+    next();
+}).on('connection', socket => {
+    require('./utils/chat').initilaize(io, socket);
 });
+
+// io.on('connection', socket => {
+//     socket.on('test', data => {
+//         console.log(data);
+//         socket.emit("success", { name: 'Admin', message: 'Welcome' });
+//     })
+// });
 
 const migrateData = async () => {
     let migrator = require('./migrations/migrator');
